@@ -1,0 +1,16 @@
+{
+  "port": "5001",
+  "mongodbUrl": "mongodb+srv://sahak:sahak@win-solutions.q70id4a.mongodb.net/win-solutions?retryWrites=true&w=majority",
+  "adminSecretToken": "secretToken@123",
+  "jwtSecret": "mysecretjwttokenkey",
+  "emailService": {
+    "testDomain": "sandbox0ca5370c0cda41aca4d3bc15a6aa6c45.mailgun.org",
+    "privateApiKey": "6cc42bfd5a200d6080a13ee832804306",
+    "publicApiKey": "pubkey-36d4e3979b53ec330199206054334d25",
+    "emailTemplates": {
+      "forgotPassword": "forgot-password-template",
+      "verifyEmail": "verify-email-template",
+      "orderSuccess": "order-success"
+    }
+  }
+}
