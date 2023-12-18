@@ -13,5 +13,20 @@
       "verifyEmail": "verify-email-template",
       "orderSuccess": "order-success"
     }
+  },
+  "cloudinary": {
+    " cloud_name": "dyzgrm3e7",
+    "api_key": "721494539693676",
+    "api_secret": "5LjiSRV_IDz-ykxb3ZzDm981_ps",
+    "folderPath": "win-solutions/products/",
+    "publicId_prefix": "win_prods_",
+    "bigSize": "400X400"
+  },
+  "stripe": {
+    "publishableKey": "pk_test_51OOioFEWvDaxLBgTsJeceiB2ZEqdzxrUCJiEVmZVgyyHZl0VuNqfbDJ3svwXgtE6f0Ew7hFWKERjwYVlERssNBWP00sL6amMGw",
+    "secretKey": "sk_test_51OOioFEWvDaxLBgTjzmOs7TOIpaXZsS2oR0v3AMqKJhfqjrsYLfEbzRUFcafbAAumi7uOXVmQVK3ZxXj0ny2ryvm0087gy2eQo",
+    "sucessUrl": "http://localhost:5001/order-success",
+    "cancelUrl": "http://localhost:5001/order-cancel",
+    "webhook_secret": "whsec_e41b9700c0a83f46fa9a24c47f99285fd061dbf44ac66ae2f1efa7c747971044"
   }
 }

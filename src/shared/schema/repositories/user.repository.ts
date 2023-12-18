@@ -10,8 +10,7 @@ export class UsersRepository {
   async findOne(query: any) {
     return await this.userModel.findOne(query);
   }
-  async findAll(query: any) {
-    console.log('start');
+  async find(query: any) {
     return await this.userModel.find(query);
   }
   async create(data: Record<string, any>) {

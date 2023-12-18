@@ -71,9 +71,9 @@ export class UsersController {
     return this.usersService.updateNameOrPassword(id, updateUserDto);
   }
   @Get()
+  @Roles(userTypes.ADMIN)
   async findAll(@Query('type') type: string) {
-    console.log('start');
-    return await this.usersService.findAll(type);
+    return await this.usersService.find(type);
   }
 
   @Patch(':id')

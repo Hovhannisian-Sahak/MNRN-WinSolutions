@@ -249,10 +249,9 @@ export class UsersService {
       throw error;
     }
   }
-  async findAll(type: string) {
+  async find(type: string) {
     try {
-      console.log("start");
-      const users = await this.userModel.findAll({ type });
+      const users = await this.userModel.find({ type });
       console.log(users);
       return {
         success: true,
