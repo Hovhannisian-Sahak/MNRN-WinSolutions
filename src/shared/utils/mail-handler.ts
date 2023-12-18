@@ -20,7 +20,7 @@ export const sendEmail = async (
     });
 
     const username = 'api';
-    const password = config.get('emailService.privateKey');
+    const password = config.get('emailService.privateApiKey');
     const token = Buffer.from(`${username}:${password}`).toString('base64');
 
     const response = await axios({
