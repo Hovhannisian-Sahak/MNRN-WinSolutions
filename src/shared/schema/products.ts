@@ -52,7 +52,10 @@ export class Products {
   productName: string;
   @Prop({ requied: true })
   description: string;
-  @Prop({ requied: true })
+  @Prop({
+    default:
+      'https://png.pngtree.com/png-vector/20221125/ourmid/pngtree-no-image-available-icon-flatvector-illustration-pic-design-profile-vector-png-image_40966566.jpg',
+  })
   image: string;
   @Prop({
     requied: true,
@@ -82,7 +85,7 @@ export class Products {
   feedbackDetails: Feedbackers[];
   @Prop([{ type: SkuDetailsSchema }])
   skuDetails: SkuDetails[];
-  @Prop({})
+  @Prop({ type: Object })
   imageDetails: Record<string, any>;
   @Prop({})
   requirementSpecification: Record<string, any>[];

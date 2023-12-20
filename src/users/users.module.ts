@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { UsersRepository } from 'src/shared/schema/repositories/user.repository';
+import { UsersRepository } from 'src/shared/repositories/user.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema, Users } from 'src/shared/schema/users';
 import { APP_GUARD } from '@nestjs/core';

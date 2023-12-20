@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
+  app.setGlobalPrefix(config.get('appPrefix'));
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(config.get('port'), () => {
     console.log(`server running on port ${config.get('port')}`);

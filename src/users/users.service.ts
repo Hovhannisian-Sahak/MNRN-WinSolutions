@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersRepository } from 'src/shared/schema/repositories/user.repository';
+import { UsersRepository } from 'src/shared/repositories/user.repository';
 import { userTypes } from 'src/shared/schema/users';
 import config from 'config';
 import {

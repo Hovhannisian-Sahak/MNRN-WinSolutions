@@ -4,6 +4,8 @@
   "adminSecretToken": "secretToken@123",
   "jwtSecret": "mysecretjwttokenkey",
   "loginLink": "localhost:5001/users/login",
+  "appPrefix": "/api/v1",
+  "fileStoragePath": "../uploads/",
   "emailService": {
     "testDomain": "sandbox0ca5370c0cda41aca4d3bc15a6aa6c45.mailgun.org",
     "privateApiKey": "6cc42bfd5a200d6080a13ee832804306",
@@ -15,7 +17,7 @@
     }
   },
   "cloudinary": {
-    " cloud_name": "dyzgrm3e7",
+    "cloud_name": "dyzgrm3e7",
     "api_key": "721494539693676",
     "api_secret": "5LjiSRV_IDz-ykxb3ZzDm981_ps",
     "folderPath": "win-solutions/products/",
