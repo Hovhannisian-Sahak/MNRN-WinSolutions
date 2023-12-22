@@ -97,9 +97,6 @@ export class OrdersService {
       if (lineItems.length === 0) {
         throw new BadRequestException('No items in cart');
       }
-      console.log('card-items-----', cardItems);
-      console.log('line-items-----', lineItems);
-      console.log('user----------', user);
 
       const session = await this.stripeClient.checkout.sessions.create({
         line_items: lineItems,
@@ -115,7 +112,7 @@ export class OrdersService {
         success_url: config.get('stripe.sucessUrl'),
         cancel_url: config.get('stripe.cancelUrl'),
       });
-      console.log('session----------------:', session);
+
       return {
         message: 'Payment checkout session successfully created',
         success: true,
@@ -127,9 +124,6 @@ export class OrdersService {
   }
 
   async webhook(rawBody: Buffer, sig: string) {
-
-    console.log("rawBody-----------------",rawBody);
-    console.log("sig----------------------",sig);
     try {
       let event;
       try {

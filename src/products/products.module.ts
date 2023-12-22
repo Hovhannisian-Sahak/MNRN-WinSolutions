@@ -17,6 +17,8 @@ import { ProductRepository } from 'src/shared/repositories/product.repository';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'src/shared/middleware/roles.guard';
 import { License, LicenseSchema } from 'src/shared/schema/license';
+import { OrderSchema, Orders } from 'src/shared/schema/orders';
+import { OrderRepository } from 'src/shared/repositories/order.repository';
 
 @Module({
   controllers: [ProductsController],
@@ -24,6 +26,7 @@ import { License, LicenseSchema } from 'src/shared/schema/license';
     ProductsService,
     UsersRepository,
     ProductRepository,
+    OrderRepository,
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
   imports: [
@@ -43,6 +46,12 @@ import { License, LicenseSchema } from 'src/shared/schema/license';
       {
         name: License.name,
         schema: LicenseSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: Orders.name,
+        schema: OrderSchema,
       },
     ]),
     StripeModule.forRoot({

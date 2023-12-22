@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductRepository } from 'src/shared/repositories/product.repository';
 import { InjectStripe } from 'nestjs-stripe';
@@ -10,10 +10,12 @@ import cloudinary from 'cloudinary';
 import config from 'config';
 import { unlinkSync } from 'fs';
 import { ProductSkuDto, ProductSkuDtoArr } from './dto/product-sku.dto';
+import { OrderRepository } from 'src/shared/repositories/order.repository';
 @Injectable()
 export class ProductsService {
   constructor(
     @Inject(ProductRepository) private readonly productDB: ProductRepository,
+    @Inject(OrderRepository) private readonly orderDB: OrderRepository,
     @InjectStripe() private readonly stripeClient: Stripe,
   ) {
     cloudinary.v2.config({
@@ -395,6 +397,104 @@ export class ProductsService {
       );
       return {
         message: 'License updated successfully',
+        success: true,
+        result,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async addProductReview(
+    id: string,
+    rating: number,
+    review: string,
+    user: Record<string, any>,
+  ) {
+    try {
+      const product = await this.productDB.findOneProduct({ _id: id });
+      if (!product) {
+        throw new Error("The Product doesn't exists");
+      }
+      if (
+        product.feedbackDetails.find(
+          (value: { customerId: string }) =>
+            value.customerId === user._id.toString(),
+        )
+      ) {
+        throw new BadRequestException(
+          'You have already gave review for this product',
+        );
+      }
+      const order = await this.orderDB.findOne({
+        userId: user._id.toString(),
+        'orderedItems.productId': id,
+      });
+      if (!order) {
+        throw new BadRequestException('You have not purchased this product');
+      }
+      const ratings: any[] = [];
+      product.feedbackDetails.forEach((comment: { rating: any }) =>
+        ratings.push(comment.rating),
+      );
+
+      let avgRating = String(rating);
+      if (ratings.length > 0) {
+        avgRating = (ratings.reduce((a, b) => a + b) / ratings.length).toFixed(
+          2,
+        );
+      }
+      const reviewDetails = {
+        rating: rating,
+        feedbackMsg: review,
+        customerId: user._id,
+        customerName: user.name,
+      };
+      const result = await this.productDB.findOneAndUpdate(
+        { _id: id },
+        { $set: { avgRating }, $push: { feedbackDetails: reviewDetails } },
+      );
+      return {
+        message: 'Product review added successfully',
+        success: true,
+        result,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async removeProductReview(id: string, reviewId: string) {
+    try {
+      const product = await this.productDB.findOneProduct({ _id: id });
+      if (!product) {
+        throw new Error('No such Product Found!');
+      }
+      const review = product.feedbackDetails.find(
+        (review) => review._id == reviewId,
+      );
+      if (!review) {
+        throw new Error('Review does not exist!');
+      }
+      const ratings: any[] = [];
+      product.feedbackDetails.forEach((comment) => {
+        if (comment._id.toString() !== reviewId) {
+          ratings.push(comment.rating);
+        }
+      });
+
+      let avgRating = '0';
+      if (ratings.length > 0) {
+        avgRating = (ratings.reduce((a, b) => a + b) / ratings.length).toFixed(
+          2,
+        );
+      }
+
+      const result = await this.productDB.findOneAndUpdate(
+        { _id: id },
+        { $set: { avgRating }, $pull: { feedbackDetails: { _id: reviewId } } },
+      );
+
+      return {
+        message: 'Product review removed successfully',
         success: true,
         result,
       };

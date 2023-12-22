@@ -134,4 +134,26 @@ export class ProductsController {
       licenseKey,
     );
   }
+  @Post('/:id/reviews')
+  @Roles(userTypes.CUSTOMER)
+  async addProductReview(
+    @Param('id') id: string,
+    @Body('rating') rating: number,
+    @Body('review') review: string,
+    @Req() req: any,
+  ) {
+    return await this.productsService.addProductReview(
+      id,
+      rating,
+      review,
+      req.user,
+    );
+  }
+  @Delete('/:id/reviews/:reviewId')
+  async removeProductReview(
+    @Param('id') id: string,
+    @Param('reviewId') reviewId: string,
+  ) {
+    return await this.productsService.removeProductReview(id, reviewId);
+  }
 }
