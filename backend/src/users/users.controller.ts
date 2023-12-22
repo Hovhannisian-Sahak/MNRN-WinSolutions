@@ -17,7 +17,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'express';
 import { Roles } from 'src/shared/middleware/role.decorators';
-import { Users, userTypes } from 'src/shared/schema/users';
+import { userTypes } from 'src/shared/schema/users';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -73,16 +73,11 @@ export class UsersController {
   @Get()
   @Roles(userTypes.ADMIN)
   async findAll(@Query('type') type: string) {
-    return await this.usersService.find(type);
-  }
-  @Get()
-  @Roles(userTypes.ADMIN)
-  async findAllUsers() {
-    return await this.usersService.findUsers();
+    return await this.usersService.findUsers(type);
   }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateOne(+id, updateUserDto);
+    return this.usersService.updateNameOrPassword(id, updateUserDto);
   }
 
   @Delete(':id')

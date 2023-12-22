@@ -1,6 +1,5 @@
-import { SkuDetails } from 'src/shared/schema/products';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
+
 import { checkoutDtoArr } from './dto/checkout-dto';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';

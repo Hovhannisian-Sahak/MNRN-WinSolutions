@@ -249,11 +249,10 @@ export class UsersService {
       throw error;
     }
   }
-  async find(type: string) {
+
+  async findUsers(type: string) {
     try {
-      console.log('type----------', type);
       const users = await this.userModel.find({ type });
-      console.log(users);
       return {
         success: true,
         message: 'Users fetched successfully',
@@ -263,28 +262,7 @@ export class UsersService {
       throw error;
     }
   }
-  async findUsers() {
-    try {
-      const users = await this.userModel.findUsers();
-
-      return {
-        success: true,
-        message: 'Users fetched successfully',
-        result: users,
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  updateOne(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-}
-function generateHashPassword(password: string): string {
-  throw new Error('Function not implemented.');
 }
