@@ -7,6 +7,9 @@ export class UsersRepository {
   constructor(
     @InjectModel(Users.name) private readonly userModel: Model<Users>,
   ) {}
+  async findUsers() {
+    return await this.userModel.find().exec();
+  }
   async findOne(query: any) {
     return await this.userModel.findOne(query);
   }

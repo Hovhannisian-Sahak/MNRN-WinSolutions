@@ -251,8 +251,22 @@ export class UsersService {
   }
   async find(type: string) {
     try {
+      console.log('type----------', type);
       const users = await this.userModel.find({ type });
       console.log(users);
+      return {
+        success: true,
+        message: 'Users fetched successfully',
+        result: users,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async findUsers() {
+    try {
+      const users = await this.userModel.findUsers();
+
       return {
         success: true,
         message: 'Users fetched successfully',

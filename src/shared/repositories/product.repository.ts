@@ -93,4 +93,13 @@ export class ProductRepository {
   async updateLicense(query: any, update: any) {
     return await this.licenseModel.updateOne(query, update, { new: true });
   }
+  async findLicense(query: any, limit?: number) {
+    if (limit && limit > 0) {
+      return await this.licenseModel.find(query).limit(limit);
+    }
+    return await this.licenseModel.find(query);
+  }
+  async updateLicenseMany(query: any, data: any) {
+    return await this.licenseModel.updateMany(query, data);
+  }
 }

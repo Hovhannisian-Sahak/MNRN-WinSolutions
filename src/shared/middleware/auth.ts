@@ -15,8 +15,10 @@ export class AuthMiddleware implements NestMiddleware {
     @Inject(UsersRepository) private readonly userDB: UsersRepository,
   ) {}
   async use(req: Request | any, res: Response, next: NextFunction) {
+    console.log('AuthMiddleware: Start');
     try {
       const token = req.cookies.auth_token;
+      console.log(token);
       if (!token) {
         throw new UnauthorizedException('Missing Auth token');
       }
@@ -34,7 +36,9 @@ export class AuthMiddleware implements NestMiddleware {
       req.user = user;
       next();
     } catch (error) {
+      console.error('AuthMiddleware Error:', error.message);
       throw new UnauthorizedException(error.message);
     }
+    console.log('AuthMiddleware: End');
   }
 }

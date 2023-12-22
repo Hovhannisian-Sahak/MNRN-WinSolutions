@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Req,
+  Headers,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { checkoutDtoArr } from './dto/checkout-dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
-  }
-
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  async findAll(@Query('status') status: string, @Req() req: any) {
+    return await this.ordersService.findAll(status, req.user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.ordersService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  @Post('/checkout')
+  async checkout(@Body() body: checkoutDtoArr, @Req() req: any) {
+    return await this.ordersService.checkout(body, req.user);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
+  @Post('/webhook')
+  async webhook(
+    @Body() rawBody: Buffer,
+    @Headers('stripe-signature') sig: string,
+  ) {
+    return await this.ordersService.webhook(rawBody, sig);
   }
 }

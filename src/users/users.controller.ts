@@ -17,14 +17,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'express';
 import { Roles } from 'src/shared/middleware/role.decorators';
-import { userTypes } from 'src/shared/schema/users';
+import { Users, userTypes } from 'src/shared/schema/users';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    return await this.usersService.create(createUserDto);
   }
   @Post('/login')
   @HttpCode(HttpStatus.OK)
@@ -75,7 +75,11 @@ export class UsersController {
   async findAll(@Query('type') type: string) {
     return await this.usersService.find(type);
   }
-
+  @Get()
+  @Roles(userTypes.ADMIN)
+  async findAllUsers() {
+    return await this.usersService.findUsers();
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateOne(+id, updateUserDto);

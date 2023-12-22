@@ -1,11 +1,9 @@
-import { License } from './../shared/schema/license';
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from 'src/shared/repositories/product.repository';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
-import { Products, SkuDetails } from 'src/shared/schema/products';
+import { Products } from 'src/shared/schema/products';
 import { GetProductQueryDto } from './dto/get-product-query-dto';
 import qs2m from 'qs-to-mongo';
 import cloudinary from 'cloudinary';
