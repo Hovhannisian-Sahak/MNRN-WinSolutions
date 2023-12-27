@@ -6,9 +6,7 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from '../repositories/user.repository';
 import { decodeAuthToken } from '../utils/token-generator';
-
 import { NextFunction, Request, Response } from 'express';
-import config from 'config';
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   constructor(

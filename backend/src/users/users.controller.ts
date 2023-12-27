@@ -26,6 +26,7 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
   }
+
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -72,7 +73,7 @@ export class UsersController {
   }
   @Get()
   @Roles(userTypes.ADMIN)
-  async findAll(@Query('type') type: string) {
+  async findAllCustomers(@Query('type') type: string) {
     return await this.usersService.findUsers(type);
   }
   @Patch(':id')

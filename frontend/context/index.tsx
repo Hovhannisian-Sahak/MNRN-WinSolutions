@@ -1,7 +1,7 @@
 import { useReducer, createContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
 import axios from "axios";
+import { response } from "express";
 interface Props {
   children: React.ReactNode;
 }
@@ -35,48 +35,93 @@ const userReducer = (
   }
 };
 const Provider = ({ children }: Props) => {
-  const dispatch = useDispatch();
-  const [state, reducer] = useReducer(userReducer, initialState);
+  const [state, dispatch] = useReducer(userReducer, initialState);
   const router = useRouter();
   useEffect(() => {
     dispatch({
       type: "LOGIN",
-      payload: localStorage.getItem("_user")
-        ? JSON.parse(localStorage.getItem("_user") || "{}")
-        : null,
+      payload: localStorage.getItem("_user" || "{}"),
     });
   }, []);
+  // axios.interceptors.response.use(
+  //   (response) => {
+  //     console.log("success", response);
+  //   },
+  //   (error) => {
+  //     console.log("fail", error);
+  //   }
+  // );
   axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
+    (response) => response,
     (error) => {
-      if (error.response.status === 401) {
+      let res = error.response;
+      if (
+        res &&
+        res.status === 401 &&
+        res.config &&
+        !res.config.__isRetryRequest
+      ) {
         return new Promise((resolve, reject) => {
           axios
             .put("/api/v1/users/logout")
-            .then((res) => {
+            .then((data) => {
+              console.log("/401 error > logout");
               dispatch({
                 type: "LOGOUT",
-                payload: null,
+                payload: undefined,
               });
               localStorage.removeItem("_user");
+              router.push("/auth");
             })
             .catch((err) => {
-              reject(err);
+              console.error(err);
+              console.log("AXIOS INTERCEPTORS ERR", err);
+              reject(error);
             });
         });
       }
+
+      // If 'error.response' is not defined, handle the error accordingly
+      if (!error.response) {
+        // Handle the scenario when 'error.response' is undefined
+        console.error("Error response is undefined:", error);
+        // You can choose to reject the promise or handle it in another way
+      }
+
+      return Promise.reject(error);
     }
   );
 
   useEffect(() => {
-    const getCSRF_token = async () => {
-      const { data } = await axios.get("/api/v1/csrf-token");
-      axios.defaults.headers["X-CSRF-TOKEN"] = data.csrfToken;
+    const getCsrfToken = async () => {
+      try {
+        const res = await fetch("/api/v1/csrf-token");
+        console.log("Response Data:", res);
+
+        if (!res.ok) {
+          // Check if the response is successful
+          throw new Error(
+            `Failed to fetch CSRF Token (${res.status}): ${res.statusText}`
+          );
+        }
+
+        const data = await res.json(); // Wait for the JSON data
+        const csrfToken = data?.csrfToken;
+
+        if (!csrfToken) {
+          throw new Error("CSRF Token not found");
+        }
+
+        axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
+        console.log("CSRF Token", csrfToken, axios.defaults.headers);
+      } catch (error) {
+        console.error("Error fetching CSRF Token:", error);
+      }
     };
-    getCSRF_token();
+
+    getCsrfToken();
   }, []);
+
   return (
     <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
   );

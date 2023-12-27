@@ -252,7 +252,7 @@ export class UsersService {
 
   async findUsers(type: string) {
     try {
-      const users = await this.userModel.find({ type });
+      const users = await this.userModel.find({ type: type });
       return {
         success: true,
         message: 'Users fetched successfully',
@@ -262,6 +262,7 @@ export class UsersService {
       throw error;
     }
   }
+
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
