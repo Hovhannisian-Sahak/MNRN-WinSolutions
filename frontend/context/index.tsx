@@ -40,7 +40,7 @@ const Provider = ({ children }: Props) => {
   useEffect(() => {
     dispatch({
       type: "LOGIN",
-      payload: localStorage.getItem("_user" || "{}"),
+      payload: JSON.parse(localStorage.getItem("_user") || "{}"),
     });
   }, []);
   // axios.interceptors.response.use(

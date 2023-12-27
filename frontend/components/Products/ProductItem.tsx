@@ -1,7 +1,7 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import Link from "next/link";
-import { Badge, Card, Col } from "react-bootstrap";
-import { Eye } from "react-bootstrap-icons";
+import { Badge, Button, Card, Col } from "react-bootstrap";
+import { Eye, Pen, Trash, Upload } from "react-bootstrap-icons";
 import StarRatingComponent from "react-star-rating-component";
 import { getFormattedStringFromDays } from "../../utils";
 interface Props {
@@ -10,10 +10,15 @@ interface Props {
 }
 
 const ProductItem: FC<Props> = ({ product, userType }) => {
+  console.log(product);
+  console.log(userType);
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <Col>
-      <Card>
+      <Card className="productCard">
+        <Card.Img variant="img" src={product.image} />
         <Card.Body>
+          <Card.Title>{product.productName}</Card.Title>
           <StarRatingComponent
             name="rate2"
             editing={false}
@@ -56,11 +61,50 @@ const ProductItem: FC<Props> = ({ product, userType }) => {
                 </Badge>
               ))}
           <br />
-          <Link href={"/"}>
-            <a className="btn btn-outline-dark viewProdBtn">
-              <Eye /> View Details
-            </a>
-          </Link>
+          {userType === "admin" ? (
+            <div className="btnGrpForProduct">
+              <div className="file btn btn-md btn-outline-primary fileInputDiv">
+                <Upload />
+                <input
+                  type="file"
+                  name="file"
+                  className="fileInput"
+                  // onChange={uploadProductImage}
+                />
+              </div>
+              <Link href={`/products/update-product?productId=${product?._id}`}>
+                <a className="btn btn-outline-dark viewProdBtn">
+                  <Pen />
+                </a>
+              </Link>
+              <Button
+                variant="outline-dark"
+                className="btn btn-outline-dark viewProdBtn"
+                // onClick={() => deleteProduct()}
+              >
+                {isLoading && (
+                  <span
+                    className="spinner-border spinner-border-sm mr-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                )}
+                <Trash />
+              </Button>
+              <Link href={`/products/${product?._id}`}>
+                <a className="btn btn-outline-dark viewProdBtn">
+                  <Eye />
+                </a>
+              </Link>
+            </div>
+          ) : (
+            <Link href={`/products/${product?._id}`}>
+              <a className="btn btn-outline-dark viewProdBtn">
+                <Eye />
+                View Details
+              </a>
+            </Link>
+          )}
         </Card.Body>
       </Card>
     </Col>

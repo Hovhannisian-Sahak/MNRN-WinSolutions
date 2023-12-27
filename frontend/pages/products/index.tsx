@@ -1,18 +1,34 @@
 import axios from "axios";
 import { GetServerSideProps, NextPage } from "next";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import queryString from "query-string";
 import { Col, DropdownButton, Dropdown, Row } from "react-bootstrap";
 import BreadcrumbDisplay from "../../components/shared/BreadcrumbDisplay";
 import { useRouter } from "next/router";
+import ProductFilter from "../../components/Products/ProductFilter";
+import ProductItem from "../../components/Products/ProductItem";
+import PaginationDisplay from "../../components/shared/PaginationDisplay";
+import Link from "next/link";
+import { Context } from "../../context";
+import { PlusCircle } from "react-bootstrap-icons";
 interface Props {
   products: Record<string, any>[];
   metadata: Record<string, any>;
 }
 
 const AllProducts: NextPage<Props> = ({ products, metadata }) => {
+  const [userType, setUserType] = useState("customer");
   const [sortText, setSortText] = useState("Sort By");
   const router = useRouter();
+  const {
+    state: { user },
+  } = useContext(Context);
+  useEffect(() => {
+    if (user) {
+      setUserType(user.type);
+    }
+  }, [user]);
+
   return (
     <>
       <Row>
@@ -32,7 +48,7 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
           <DropdownButton
             variant="outline-secondary"
             id="input--group-dropdown-2"
-            title="Dropdown button"
+            title={sortText}
             onSelect={(e) => {
               if (e) {
                 setSortText(
@@ -52,7 +68,7 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
             }}
           >
             <Dropdown.Item href="#" eventKey="-avgRating">
-              Rating
+              Rating {userType + "hh"}
             </Dropdown.Item>
             <Dropdown.Item href="#" eventKey="-createdAt">
               Latest
@@ -61,13 +77,41 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
               Reset
             </Dropdown.Item>
           </DropdownButton>
+
+          {userType === "admin" && (
+            <Link href="/products/update-product">
+              <a className="btn btn-primary btnAddProduct">
+                <PlusCircle className="btnAddProductIcon" />
+                Add Product
+              </a>
+            </Link>
+          )}
         </Col>
       </Row>
       <Row>
         <Col sm={2}>
           <ProductFilter />
         </Col>
-        <Col sm={8}></Col>
+        <Col sm={10}>
+          <Row xs={1} md={3} className="g-3">
+            {products && products.length > 0 ? (
+              products.map((product) => (
+                <ProductItem
+                  key={product._id}
+                  product={product}
+                  userType={userType}
+                />
+              ))
+            ) : (
+              <h3>No Products found!</h3>
+            )}{" "}
+          </Row>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <PaginationDisplay metadata={metadata} />
+        </Col>
       </Row>
     </>
   );
