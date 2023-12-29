@@ -4,19 +4,92 @@ import { Badge, Button, Card, Col } from "react-bootstrap";
 import { Eye, Pen, Trash, Upload } from "react-bootstrap-icons";
 import StarRatingComponent from "react-star-rating-component";
 import { getFormattedStringFromDays } from "../../utils";
+import { isArray } from "util";
+import { useToasts } from "react-toast-notifications";
+import { useRouter } from "next/router";
+import { Product } from "../../services/Products.services";
 interface Props {
   product: Record<string, any>;
   userType: string;
 }
 
 const ProductItem: FC<Props> = ({ product, userType }) => {
-  console.log(product);
-  console.log(userType);
+  const { addToast } = useToasts();
   const [isLoading, setIsLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const router = useRouter();
+  const deleteProduct = async () => {
+    try {
+      setIsLoading(true);
+      const deleteconfirm = confirm(
+        "Want o delete?you will lost all skus licenses for this product"
+      );
+      if (deleteconfirm) {
+        const res = await Product.deleteProduct(product._id);
+        if (!res.success) {
+          throw new Error(res.message);
+        }
+        addToast(res.message, {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        router.push("/products");
+      }
+    } catch (error: any) {
+      if (error.response) {
+        return addToast(error.response.data.message, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+      return addToast(error.message, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const uploadProductImage = async (e: any) => {
+    try {
+      setUploading(true);
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("productImage", file);
+      const res = await Product.uploadProductImage(product._id, formData);
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      console.log(res);
+      product.image = res.result;
+      addToast(res.message, { appearance: "success", autoDismiss: true });
+      router.push("/products");
+    } catch (error: any) {
+      if (error.response) {
+        return addToast(error.response.data.message, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+      return addToast(error.message, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <Col>
       <Card className="productCard">
-        <Card.Img variant="img" src={product.image} />
+        <Card.Img
+          variant="img"
+          src={
+            uploading
+              ? "https://www.ebi.ac.uk/training/progressbar.gif"
+              : product?.image
+          }
+        />
         <Card.Body>
           <Card.Title>{product.productName}</Card.Title>
           <StarRatingComponent
@@ -69,7 +142,7 @@ const ProductItem: FC<Props> = ({ product, userType }) => {
                   type="file"
                   name="file"
                   className="fileInput"
-                  // onChange={uploadProductImage}
+                  onChange={uploadProductImage}
                 />
               </div>
               <Link href={`/products/update-product?productId=${product?._id}`}>
@@ -80,7 +153,7 @@ const ProductItem: FC<Props> = ({ product, userType }) => {
               <Button
                 variant="outline-dark"
                 className="btn btn-outline-dark viewProdBtn"
-                // onClick={() => deleteProduct()}
+                onClick={() => deleteProduct()}
               >
                 {isLoading && (
                   <span

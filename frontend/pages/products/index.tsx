@@ -146,7 +146,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return {
       props: {
         products: {},
-        message: "Error fetching data",
+        metadata: {},
       },
     };
   }

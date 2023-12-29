@@ -118,7 +118,7 @@ export class ProductsService {
     result: null;
   }> {
     try {
-      const product = await this.productDB.findOneProduct(id);
+      const product = await this.productDB.findOneProduct({ _id: id });
       if (!product) {
         throw new Error('product does not exist');
       }
@@ -297,19 +297,47 @@ export class ProductsService {
         });
         data.stripePriceId = stripPriceDetails.id;
       }
-      await this.productDB.findOneAndUpdateWithOptions(
+      const result = await this.productDB.findOneAndUpdateWithOptions(
         {
           _id: id,
           'skuDetails._id': skuId,
         },
-        { $set: { 'skuDetails.$[element].price': data.price } },
-        { arrayFilters: [{ 'element._id': skuId }] },
+        {
+          $set: {
+            'skuDetails.$[element].name': data.skuName,
+            'skuDetails.$[element].price': data.price,
+            'skuDetails.$[element].validity': data.validity,
+          },
+        },
+        { arrayFilters: [{ 'element._id': skuId }], new: true },
       );
-
       return {
         message: 'product sku updated by ID successfully',
         success: true,
-        result: null,
+        result,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async deleteProductSkuByID(id: string, skuId: string) {
+    try {
+      const product = await this.productDB.findOneProduct({ _id: id });
+      const skuDetails = product.skuDetails.find(
+        (sku) => sku._id.toString() === skuId,
+      );
+      await this.stripeClient.prices.update(skuDetails.stripePriceId, {
+        active: false,
+      });
+      await this.productDB.deleteSku(id, skuId);
+      await this.productDB.deleteAllLicences(undefined, skuId);
+      return {
+        message: 'Product sku details deleted successfully',
+        success: true,
+        result: {
+          id,
+          skuId,
+        },
       };
     } catch (error) {
       throw error;

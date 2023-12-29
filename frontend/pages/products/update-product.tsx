@@ -12,8 +12,6 @@ import { Col } from "react-bootstrap";
 import { Archive, Check2Circle, Pen, Trash } from "react-bootstrap-icons";
 import { Table } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
-import { useRouter } from "next/router";
-import { Products } from "../../services/product.service";
 import axios from "axios";
 import Link from "next/link";
 import { Product } from "../../services/Products.services";
@@ -451,8 +449,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
       console.log(context.query);
       return {
         props: {
-          error: "Product id not found",
           product: {},
+          productIdForUpdate: "",
         },
       };
     }
@@ -478,15 +476,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return {
       props: {
         product: res?.data?.result?.product || {},
-        productIdForUpdate: context.query?.productId,
+        productIdForUpdate: (context.query?.productId as string) || "",
       },
     };
   } catch (error) {
     console.error("Error fetching data:", error);
     return {
       props: {
-        products: {},
-        message: "Error fetching data",
+        product: {},
+        productIdForUpdate: "",
       },
     };
   }

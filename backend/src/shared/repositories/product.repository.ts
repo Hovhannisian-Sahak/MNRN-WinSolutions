@@ -1,3 +1,4 @@
+import { Product } from './../../../../frontend/services/Products.services';
 import { InjectModel } from '@nestjs/mongoose';
 import { Products } from '../schema/products';
 import { Model } from 'mongoose';
@@ -101,5 +102,21 @@ export class ProductRepository {
   }
   async updateLicenseMany(query: any, data: any) {
     return await this.licenseModel.updateMany(query, data);
+  }
+  async deleteSku(id: string, skuId: string) {
+    return await this.productModel.updateOne(
+      { _id: id },
+      {
+        $pull: {
+          skuDetails: { _id: skuId },
+        },
+      },
+    );
+  }
+  async deleteAllLicences(id: string, skuId: string) {
+    if (id) {
+      return await this.licenseModel.deleteMany({ product: id });
+    }
+    return await this.licenseModel.deleteMany({ productSku: skuId });
   }
 }
