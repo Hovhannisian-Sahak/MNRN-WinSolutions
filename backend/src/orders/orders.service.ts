@@ -74,6 +74,7 @@ export class OrdersService {
   }
   async checkout(body: checkoutDtoArr, user: Record<string, any>) {
     try {
+      console.log('checkout start');
       const lineItems = [];
       const cardItems = body.checkoutDetails;
       for (const item of cardItems) {
@@ -124,6 +125,7 @@ export class OrdersService {
 
   async webhook(rawBody: Buffer, sig: string) {
     try {
+      console.log('start');
       let event;
       try {
         event = this.stripeClient.webhooks.constructEvent(
@@ -131,17 +133,22 @@ export class OrdersService {
           sig,
           config.get('stripe.webhook_secret'),
         );
+        console.log(event);
       } catch (error) {
         throw new BadRequestException('Webhook Error', error.message);
       }
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object as Stripe.Checkout.Session;
+        console.log(session);
         const orderData = await this.createOrderObject(session);
+        console.log(orderData);
         const order = await this.orderDB.create(orderData);
+        console.log(order);
         if (session.payment_status === paymentStatus.paid) {
           if (order.orderStatus !== orderStatus.completed) {
             for (const item of order.orderedItems) {
               const licenses = await this.getLicense(orderData.orderId, item);
+              console.log('licenses---------------', licenses);
               item.licenses = licenses;
             }
           }
@@ -196,9 +203,11 @@ export class OrdersService {
       const product = await this.productDB.findOneProduct({
         _id: item.productId,
       });
+      console.log(product);
       const skuDetails = product.skuDetails.find(
         (sku) => sku.skuCode === item.skuCode,
       );
+      console.log(skuDetails);
       const licenses = await this.productDB.findLicense(
         {
           productSku: skuDetails._id,
@@ -206,6 +215,7 @@ export class OrdersService {
         },
         item.quantity,
       );
+      console.log(licenses);
       const licenseIds = licenses.map((license) => license._id);
       await this.productDB.updateLicenseMany(
         {

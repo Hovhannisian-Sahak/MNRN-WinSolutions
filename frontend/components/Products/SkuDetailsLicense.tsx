@@ -8,7 +8,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
-import { Product } from "../../services/Products.services";
+import { Product } from "../../services/Product.services";
 import {
   Archive,
   ArrowLeft,
@@ -54,6 +54,7 @@ const SkuDetailsLicense: FC<Props> = ({
     try {
       setIsLoadingFetch(true);
       const res = await Product.getSkuLicenses(productId, skuId);
+      console.log("res-----------------", res.result);
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -70,12 +71,12 @@ const SkuDetailsLicense: FC<Props> = ({
         autoDismiss: true,
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingFetch(false);
     }
   };
-  const updateLicenseKey = async (e: any) => {
+  console.log(licenseIdForUpdate);
+  const updateLicenseKey = async () => {
     try {
-      e.preventDefault();
       setIsLoading(true);
       const res = licenseIdForUpdate
         ? await Product.updateLicense(
@@ -109,12 +110,10 @@ const SkuDetailsLicense: FC<Props> = ({
       setIsLoading(false);
     }
   };
-  const addLicense = () => {};
+
   const deleteLicense = async (id: string) => {
     try {
-      const deleteConfirm = confirm(
-        "Want to delete?You will lost all licenses for this sku"
-      );
+      const deleteConfirm = confirm("Want to delete?");
       if (deleteConfirm) {
         setIsLoadingForDelete({
           status: true,
@@ -180,7 +179,7 @@ const SkuDetailsLicense: FC<Props> = ({
               />
               <Button
                 variant="secondary"
-                onClick={addLicense}
+                onClick={updateLicenseKey}
                 disabled={isLoading}
               >
                 {isLoading && (
@@ -212,7 +211,7 @@ const SkuDetailsLicense: FC<Props> = ({
             >
               <Pen />
             </span>
-            <span className="delBtn">
+            <span className="delBtn" onClick={() => deleteLicense(license._id)}>
               {isLoadingForDelete.status &&
               isLoadingForDelete.id === license._id ? (
                 <span

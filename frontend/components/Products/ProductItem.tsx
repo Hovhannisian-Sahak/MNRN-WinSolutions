@@ -7,7 +7,7 @@ import { getFormattedStringFromDays } from "../../utils";
 import { isArray } from "util";
 import { useToasts } from "react-toast-notifications";
 import { useRouter } from "next/router";
-import { Product } from "../../services/Products.services";
+import { Product } from "../../services/Product.services";
 interface Props {
   product: Record<string, any>;
   userType: string;

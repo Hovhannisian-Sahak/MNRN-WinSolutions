@@ -22,7 +22,6 @@ export class AuthMiddleware implements NestMiddleware {
       }
       const decoded: any = decodeAuthToken(token);
       const decodedString = JSON.stringify(decoded, null, 2);
-
       console.log('decodedString--------------', decodedString);
       console.log('decoded.id--------------', decoded._id);
       const user = await this.userDB.findById(decoded._id);

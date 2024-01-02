@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { ProductRepository } from 'src/shared/repositories/product.repository';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
-import { Products } from 'src/shared/schema/products';
+import { Products, SkuDetails } from 'src/shared/schema/products';
 import { GetProductQueryDto } from './dto/get-product-query-dto';
 import qs2m from 'qs-to-mongo';
 import cloudinary from 'cloudinary';
@@ -258,14 +258,15 @@ export class ProductsService {
         data.skuDetails[i].skuCode = skuCode;
       }
 
-      await this.productDB.findOneAndUpdate(
+      const result = await this.productDB.findOneAndUpdate(
         { _id: id },
         { $push: { skuDetails: data.skuDetails } },
       );
+      console.log(data.skuDetails);
       return {
         message: 'product sku updated successfully',
         success: true,
-        result: null,
+        result,
       };
     } catch (error) {
       throw error;
@@ -360,6 +361,7 @@ export class ProductsService {
         licenseKey,
       });
       const res = await this.productDB.createLicense(id, skuId, licenseKey);
+      console.log('res-----', res);
       return {
         message: 'License key added successfully',
         success: true,
@@ -387,6 +389,7 @@ export class ProductsService {
       if (!product) {
         throw new Error('product does not exist');
       }
+      console.log(product);
       const sku = product.skuDetails.find((sku) => sku._id == skuId);
       if (!sku) {
         throw new Error('Sku does not exist');
@@ -395,6 +398,7 @@ export class ProductsService {
         product: id,
         productSku: skuId,
       });
+      console.log(licenses);
       return {
         message: 'licence list fetched Successfully',
         success: true,

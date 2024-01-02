@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { useToasts } from "react-toast-notifications";
-import { Product } from "../../services/Products.services";
+import { Product } from "../../services/Product.services";
 import { Archive, Pen } from "react-bootstrap-icons";
 import SkuDetailsForm from "./SkuDetailsForm";
 import { Button, Badge, Table } from "react-bootstrap";
@@ -79,8 +79,8 @@ const SkuDetailsList: FC<Props> = ({
             </thead>
 
             <tbody>
-              {allSkuDetails && allSkuDetails.length > 0 ? (
-                allSkuDetails.map((skuDetail: any, key: any) => (
+              {allSkuDetails && allSkuDetails?.length > 0 ? (
+                allSkuDetails?.map((skuDetail: any, key: any) => (
                   <tr key={key}>
                     <td>{skuDetail?.skuName}</td>
                     <td>

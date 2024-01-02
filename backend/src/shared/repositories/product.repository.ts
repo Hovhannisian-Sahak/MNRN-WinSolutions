@@ -1,4 +1,3 @@
-import { Product } from './../../../../frontend/services/Products.services';
 import { InjectModel } from '@nestjs/mongoose';
 import { Products } from '../schema/products';
 import { Model } from 'mongoose';
