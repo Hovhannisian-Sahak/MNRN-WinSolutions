@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GetServerSideProps, NextPage } from "next";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import {
   Badge,
   Button,
@@ -18,18 +18,14 @@ import { BagCheckFill } from "react-bootstrap-icons";
 import NumericInput from "react-numeric-input";
 import StarRatingComponent from "react-star-rating-component";
 import { getFormattedStringFromDays } from "../../utils/index";
-import CartOffCanvas from "../../components/CartOffCanvas";
 interface Props {
   product: Record<string, any>;
   relatedProducts: Record<string, any>[];
 }
 
 const ProductDetails: NextPage<Props> = ({ product, relatedProducts }) => {
-  const [show, setShow] = useState(false);
   const [quantity, setQuantity] = useState<any>(1);
-  const [allSkuDetails, setAllSkuDetails] = useState<any>(
-    product.skuDetails ? product.skuDetails : []
-  );
+  const [allSkuDetails, setAllSkuDetails] = useState(product?.skuDetails || {});
   const [displaySku, setDisplaySku] = useState<any>(
     product.skuDetails
       ? product?.skuDetails.sort(
@@ -37,38 +33,10 @@ const ProductDetails: NextPage<Props> = ({ product, relatedProducts }) => {
         )[0] || {}
       : {}
   );
-  useEffect(() => {}, []);
-
-  console.log(product);
-  console.log(product.skuDetails);
-  console.log(displaySku);
-  console.log(allSkuDetails);
   const {
-    cartItems,
-    cartDispatch,
     state: { user },
   } = useContext(Context);
-  console.log(cartItems);
-  const handleCart = () => {
-    cartDispatch({
-      type: cartItems.find(
-        (item: { skuId: string }) => item.skuId === displaySku._id
-      )
-        ? "UPDATE_CART"
-        : "ADD_CART",
-      payload: {
-        skuId: displaySku._id,
-        quantity,
-        validity: displaySku.lifetime ? 0 : displaySku.validity,
-        price: displaySku.price,
-        productName: product.productName,
-        productImage: product.image,
-        productId: product._id,
-        skuPriceId: displaySku.stripePriceId,
-      },
-    });
-    setShow(true);
-  };
+
   return (
     <>
       <Row className="firstRow">
@@ -158,13 +126,13 @@ const ProductDetails: NextPage<Props> = ({ product, relatedProducts }) => {
             <Button
               variant="primary"
               className="cartBtn"
-              onClick={handleCart}
+              //   onClick={handleCart}
               disabled={!displaySku?.price}
             >
               <BagCheckFill className="cartIcon" />
-              {cartItems.find((item: any) => item.skuId === displaySku._id)
+              {/* {cartItems.find((item: any) => item.skuId === displaySku._id)
                 ? "Update cart"
-                : "Add to cart"}
+                : "Add to cart"} */}
             </Button>
             {/* )} */}
           </div>
@@ -279,7 +247,6 @@ const ProductDetails: NextPage<Props> = ({ product, relatedProducts }) => {
           </Col>
         ))}
       </Row>
-      <CartOffCanvas setShow={setShow} show={show} />
     </>
   );
 };

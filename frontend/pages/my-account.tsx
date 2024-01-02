@@ -16,7 +16,6 @@ import { useToasts } from "react-toast-notifications";
 import { Context } from "../context";
 import { User } from "../services/User.service";
 import AccountDetails from "../components/MyAccount/AccountDetails";
-import AllOrders from "../components/MyAccount/AllOrders";
 const MyAccount = () => {
   const router = useRouter();
   const { addToast } = useToasts();
@@ -87,9 +86,7 @@ const MyAccount = () => {
                 addToast={addToast}
               />
             </Tab.Pane>
-            <Tab.Pane eventKey="second">
-              <AllOrders />
-            </Tab.Pane>
+            <Tab.Pane eventKey="second">{/* <AllOrders /> */}</Tab.Pane>
           </Tab.Content>
         </Col>
       </Row>

@@ -12,22 +12,10 @@ const initialState = {
 interface Context {
   state: Record<string, any>;
   dispatch: (action: { type: string; payload: any }) => void;
-  cartItems: any;
-  cartDispatch: (action: {
-    type: string;
-    payload: Record<string, any>;
-  }) => void;
 }
 const initialContext: Context = {
   state: initialState,
   dispatch: () => null,
-  cartItems: [],
-  cartDispatch: function (action: {
-    type: string;
-    payload: Record<string, any>;
-  }): void {
-    throw new Error("Function is not implemented");
-  },
 };
 const Context = createContext<Context>(initialContext);
 
@@ -46,51 +34,14 @@ const userReducer = (
       return state;
   }
 };
-const cartReducer = (
-  state: any,
-  action: { type: string; payload: any | undefined }
-) => {
-  switch (action.type) {
-    case "ADD_CART":
-      const cartItems = [...state, action.payload];
-      window.localStorage.setItem("_cart", JSON.stringify(cartItems));
-      return cartItems;
-    case "REMOVE_FROM_CART":
-      const newCartItems = state.filter(
-        (item: { skuId: string }) => item.skuId !== action.payload?.skuId
-      );
-      window.localStorage.setItem("_cart", JSON.stringify(newCartItems));
-      return newCartItems;
-    case "UPDATE_CART":
-      const updatedCartItems = state.map((item: any) => {
-        if (item.skuId === action.payload?.skuId) {
-          return action.payload;
-        }
-        return item;
-      });
-      window.localStorage.setItem("_cart", JSON.stringify(updatedCartItems));
-      return updatedCartItems;
-    case "GET_CART":
-      return action.payload;
-    case "CLEAR_CART":
-      window.localStorage.setItem("_cart", "[]");
-      return [];
-    default:
-      return state;
-  }
-};
 const Provider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
-  const [cartItems, cartDispatch] = useReducer(cartReducer, []);
   const router = useRouter();
   useEffect(() => {
     dispatch({
       type: "LOGIN",
-      payload: JSON.parse(window.localStorage.getItem("_user") || "{}"),
+      payload: JSON.parse(localStorage.getItem("_user") || "{}"),
     });
-    const cartItems = JSON.parse(window.localStorage.getItem("_cart") || "[]");
-    cartDispatch({ type: "GET_CART", payload: cartItems });
-    return;
   }, []);
   // axios.interceptors.response.use(
   //   (response) => {
@@ -172,9 +123,7 @@ const Provider = ({ children }: Props) => {
   }, []);
 
   return (
-    <Context.Provider value={{ state, dispatch, cartItems, cartDispatch }}>
-      {children}
-    </Context.Provider>
+    <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
   );
 };
 export { Context, Provider };

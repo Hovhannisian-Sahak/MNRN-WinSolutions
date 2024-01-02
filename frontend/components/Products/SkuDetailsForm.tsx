@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
 import { getFormattedStringFromDays } from "../../utils";
-import { Product } from "../../services/Product.services";
+import { Product } from "../../services/Products.services";
 const initialState = {
   skuName: "",
   price: 0,
@@ -33,26 +33,9 @@ const SkuDetailsForm: FC<Props> = ({
   skuIdForUpdate,
   setSkuIdForUpdate,
 }) => {
-  console.log(skuIdForUpdate);
   const { addToast } = useToasts();
   const [isLoading, setIsLoading] = useState(false);
   const [skuForm, setSkuForm] = useState(initialState);
-  useEffect(() => {
-    if (skuIdForUpdate) {
-      const skuDetail = allSkuDetails.find(
-        (sku: { _id: string }) => sku._id === skuIdForUpdate
-      );
-      if (skuDetail) {
-        const validityTime = getFormattedStringFromDays(skuDetail.validity);
-        setSkuForm({
-          ...initialState,
-          ...skuDetail,
-          validity: validityTime.split(" ")[0] || 0,
-          validityType: validityTime.split(" ")[1] || "months",
-        });
-      }
-    }
-  }, [allSkuDetails, skuIdForUpdate]);
   const handleCancel = () => {
     setAllSkuDetailsFormShow(false);
     setSkuForm(initialState);
@@ -77,29 +60,22 @@ const SkuDetailsForm: FC<Props> = ({
       } else {
         skuForm.validity = Number.MAX_SAFE_INTEGER;
       }
-      console.log("Before if:", skuIdForUpdate);
-      const res =
-        skuIdForUpdate === ""
-          ? await Product.createSku(productId, { skuDetails: [skuForm] })
-          : await Product.updateSku(productId, skuIdForUpdate, skuForm);
-      console.log(allSkuDetails);
-      console.log("After if:", skuIdForUpdate);
-      console.log("After if:", res);
+      console.log(skuIdForUpdate);
+      const res = skuIdForUpdate
+        ? await Product.updateSku(productId, skuIdForUpdate, skuForm)
+        : await Product.createSku(productId, { skuDetails: [skuForm] });
       if (!res.success) {
         throw new Error(res.message);
       }
-      setAllSkuDetailsFormShow(false);
-      setSkuIdForUpdate("");
-      console.log(res?.result?.skuDetails);
-      setAllSkuDetails(res?.result?.skuDetails);
-
-      console.log(allSkuDetails);
       addToast(res.message, {
         appearance: "success",
         autoDismiss: true,
       });
 
       console.log(res);
+      setAllSkuDetailsFormShow(false);
+      setSkuIdForUpdate("");
+      setAllSkuDetails(res?.result?.skuDetails);
     } catch (error: any) {
       if (error.response) {
         return addToast(error.response.data.message, {
@@ -115,7 +91,22 @@ const SkuDetailsForm: FC<Props> = ({
       setIsLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (skuIdForUpdate) {
+      const skuDetail = allSkuDetails.find(
+        (sku: { _id: string }) => sku._id === skuIdForUpdate
+      );
+      if (skuDetail) {
+        const validityTime = getFormattedStringFromDays(skuDetail.validity);
+        setSkuForm({
+          ...initialState,
+          ...skuDetail,
+          validity: validityTime.split(" ")[0] || 0,
+          validityType: validityTime.split(" ")[1] || "months",
+        });
+      }
+    }
+  }, [allSkuDetails, skuIdForUpdate]);
   return (
     <Card style={{ padding: "10px" }}>
       <h6 style={{ color: "green" }}>SKU information ::</h6>

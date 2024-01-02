@@ -14,7 +14,7 @@ import { Table } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
 import axios from "axios";
 import Link from "next/link";
-import { Product } from "../../services/Product.services";
+import { Product } from "../../services/Products.services";
 const initialForm = {
   productName: "" as string,
   description: "" as string,

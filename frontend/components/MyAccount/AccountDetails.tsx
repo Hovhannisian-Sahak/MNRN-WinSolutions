@@ -15,7 +15,7 @@ interface Props {
 const AccountDetails: FC<Props> = ({ user, dispatch, addToast }) => {
   console.log(user);
   const [accountForm, setAccountForm] = useState({
-    name: user?.name,
+    name: "",
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",

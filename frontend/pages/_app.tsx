@@ -7,14 +7,12 @@ import type { AppProps } from "next/app";
 import { ToastProvider } from "react-toast-notifications";
 import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
-import NextNProgress from "nextjs-progressbar";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider>
       <Heading />
       <Container>
         <ToastProvider>
-          <NextNProgress />
           <Header />
           <Component {...pageProps} />
           <Footer />

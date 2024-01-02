@@ -9,23 +9,19 @@ import styles from "../../styles/Home.module.css";
 import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import { Context } from "../../context";
-import CartOffCanvas from "../CartOffCanvas";
 
 type Props = {};
 
 const Header = (props: Props) => {
   const [searchText, setSearchText] = useState("");
-  const [baseType, setBaseType] = useState("Products");
-  const [show, setShow] = useState(false);
   const {
     state: { user },
-    cartItems,
   } = useContext(Context);
   const search = () => {
     router.push(`/products?search=${searchText}`);
   };
   const router = useRouter();
-  console.log(cartItems);
+
   return (
     <>
       <Row className="mt-3">
@@ -61,7 +57,6 @@ const Header = (props: Props) => {
             width="40"
             color="#4c575f"
             className={styles.personIcon}
-            onClick={() => router.push("/my-account")}
           />
         </Col>
       </Row>
@@ -76,40 +71,19 @@ const Header = (props: Props) => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link onClick={() => router.push("/")}>Home </Nav.Link>
-            <NavDropdown
-              title={baseType}
-              id="collasible-nav-dropdown"
-              onSelect={(e) => {
-                setBaseType(e as string);
-                e === "All"
-                  ? router.push("/products")
-                  : router.push(`products?baseType=${e}`);
-              }}
-            >
-              <NavDropdown.Item eventKey="Computer">Computer</NavDropdown.Item>
-              <NavDropdown.Item eventKey="Mobile">Mobile</NavDropdown.Item>
-              <NavDropdown.Item eventKey="All">All</NavDropdown.Item>
+            <NavDropdown title="Products" id="collasible-nav-dropdown">
+              <NavDropdown.Item>Computer</NavDropdown.Item>
+              <NavDropdown.Item>Mobile</NavDropdown.Item>
+              <NavDropdown.Item>All</NavDropdown.Item>
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link
-              className={styles.cartItems}
-              onClick={() => setShow(true)}
-            >
-              Items: <Badge bg="secondary">{cartItems.length}</Badge>(${" "}
-              {cartItems &&
-                cartItems
-                  ?.map(
-                    (item: { quantity: number; price: number }) =>
-                      Number(item.price) * Number(item.quantity)
-                  )
-                  .reduce((a: number, b: number) => a + b, 0)}
-              )
+            <Nav.Link className={styles.cartItems}>
+              Items: <Badge bg="secondary">5</Badge>($6250)
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <CartOffCanvas setShow={setShow} show={show} />
     </>
   );
 };
